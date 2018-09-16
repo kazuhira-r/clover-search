@@ -12,7 +12,7 @@ public class DiaryRepository {
     AtomicReference<List<DiaryEntry>> diaries = new AtomicReference<>(new ArrayList<>());
 
     public void refresh(List<DiaryEntry> diaries) {
-        this.diaries.set(diaries);
+        this.diaries.set(new ArrayList<>(diaries));
     }
 
     public List<DiaryEntry> findAll() {
