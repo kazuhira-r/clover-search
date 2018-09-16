@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <!--Import own style-->
+    <link rel="stylesheet" href="/css/style.css">
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>CLOVER&#x1F340; Search</title>
+  </head>
+
+  <body>
+    <nav>
+      <div class="nav-wrapper">
+        <a href="/" class="brand-logo center">CLOVER&#x1F340; Search</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a id="entries-refresh" href="#">Diary Entries Refresh</a></li>
+          <li><a href="#" target="_blank">Source</a></li>
+          <li><a href="https://kazuhira-r.hatenablog.com/" target="_blank">CLOVER&#x1F340;</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="row">
+        <div class="col s12">
+          <div class="row">
+            <div class="input-field col s12">
+              <input type="text" id="query-text" placeholder="Search Keyword (Title or Category)">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col s6">
+              <span id="hit-count"></span>
+            </div>
+          </div>
+
+          <div id="search-result-links" class="row">
+            <!--
+            <div class="collection">
+              <a href="#!" class="collection-item">Alvin</a>
+              <a href="#!" class="collection-item">Alvin</a>
+              <a href="#!" class="collection-item">Alvin</a>
+              <a href="#!" class="collection-item">Alvin</a>
+            </div>
+            -->
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!--JavaScript at end of body for optimized loading-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!-- own script -->
+    <script src="/js/clover.js"></script>
+  </body>
+</html>
