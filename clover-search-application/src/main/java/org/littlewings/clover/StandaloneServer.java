@@ -98,7 +98,7 @@ public class StandaloneServer implements AutoCloseable {
         deploymentManager.deploy();
 
         Map<String, Object> accessLogHandlerConfig = new HashMap<>();
-        accessLogHandlerConfig.put("format", "combined");
+        accessLogHandlerConfig.put("format", "%h %l %u \"%r\" %s %b \"%{i,Referer}\" \"%{i,User-Agent}\"");
 
         HttpHandler httpHandler;
         try {
