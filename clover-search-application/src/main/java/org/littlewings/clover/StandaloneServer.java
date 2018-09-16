@@ -130,13 +130,18 @@ public class StandaloneServer implements AutoCloseable {
                 resourceManager = new ClassPathResourceManager(StandaloneServer.class.getClassLoader(), "static");
                 break;
             case "path":
+                // for development
                 try {
                     java.nio.file.Path current =
                             Paths
                                     .get(StandaloneServer.class.getProtectionDomain().getCodeSource().getLocation().toURI())
                                     .getParent()
                                     .getParent();
-                    resourceManager = new PathResourceManager(current.resolve("src/main/resources/static"));
+                    java.nio.file.Path basePath = current.resolve("src/main/resources/static");
+
+                    logger.infof("base path = %s", basePath);
+
+                    resourceManager = new PathResourceManager(basePath);
                     break;
                 } catch (URISyntaxException e) {
                     throw new RuntimeException(e);
