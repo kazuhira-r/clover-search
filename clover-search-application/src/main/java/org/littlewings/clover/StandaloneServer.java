@@ -2,7 +2,9 @@ package org.littlewings.clover;
 
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
@@ -13,6 +15,7 @@ import javax.ws.rs.ext.Provider;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
+import io.undertow.server.handlers.accesslog.AccessLogHandler;
 import io.undertow.server.handlers.resource.ClassPathResourceManager;
 import io.undertow.server.handlers.resource.PathResourceManager;
 import io.undertow.server.handlers.resource.ResourceManager;
@@ -94,11 +97,16 @@ public class StandaloneServer implements AutoCloseable {
         DeploymentManager deploymentManager = Servlets.defaultContainer().addDeployment(deploymentInfo);
         deploymentManager.deploy();
 
+        Map<String, Object> accessLogHandlerConfig = new HashMap<>();
+        accessLogHandlerConfig.put("format", "combined");
+
         HttpHandler httpHandler;
         try {
             httpHandler =
                     Handlers
-                            .path(deploymentManager.start());
+                            .path(new AccessLogHandler.Builder()
+                                    .build(accessLogHandlerConfig)
+                                    .wrap(deploymentManager.start()));
         } catch (ServletException e) {
             throw new RuntimeException(e);
         }
