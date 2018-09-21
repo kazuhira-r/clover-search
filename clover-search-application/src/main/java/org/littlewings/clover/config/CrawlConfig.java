@@ -1,5 +1,6 @@
 package org.littlewings.clover.config;
 
+import java.util.Optional;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -20,12 +21,24 @@ public class CrawlConfig {
     @ConfigProperty(name = "diary.crawl.job.schedule")
     String crawlJobSchedule;
 
-    public static String retrieveResourceManagerStrategy() {
-        return retrieveProperty("undertow.resource.manager.strategy", String.class);
+    public static String retrieveServerBindAddress() {
+        return retrieveProperty("server.bind.address", String.class)
+                .orElse("localhost");
     }
 
-    static <T> T retrieveProperty(String propertyName, Class<T> propertyType) {
-        return ConfigProvider.getConfig().getValue(propertyName, propertyType);
+    public static int retrieveServerPort() {
+        return retrieveProperty("server.bind.address", Integer.class)
+                .orElse(8080);
+    }
+
+    public static String retrieveResourceManagerStrategy() {
+        return retrieveProperty("undertow.resource.manager.strategy", String.class)
+                .orElse("classpath");
+    }
+
+
+    static <T> Optional<T> retrieveProperty(String propertyName, Class<T> propertyType) {
+        return ConfigProvider.getConfig().getOptionalValue(propertyName, propertyType);
     }
 
     public String getBaseUrl() {

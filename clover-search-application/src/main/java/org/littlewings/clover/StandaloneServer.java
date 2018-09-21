@@ -52,7 +52,7 @@ public class StandaloneServer implements AutoCloseable {
     }
 
     public StandaloneServer() {
-        this("0.0.0.0", 8080);
+        this(CrawlConfig.retrieveServerBindAddress(), CrawlConfig.retrieveServerPort());
     }
 
     public static void main(String... args) {
@@ -121,7 +121,7 @@ public class StandaloneServer implements AutoCloseable {
         undertow.start();
 
         long startupTime = System.nanoTime() - startTime;
-        logger.infof("server startup, %d msec", TimeUnit.MILLISECONDS.convert(startupTime, TimeUnit.NANOSECONDS));
+        logger.infof("server startup[%s:%d], %d msec", bindAddress, port, TimeUnit.MILLISECONDS.convert(startupTime, TimeUnit.NANOSECONDS));
     }
 
     @Override
