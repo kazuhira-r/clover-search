@@ -21,7 +21,7 @@
       <div class="nav-wrapper">
         <a href="/" class="brand-logo center">CLOVER&#x1F340; Search</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a id="entries-refresh" href="#">Diary Entries Refresh</a></li>
+          <li><a class="modal-trigger" href="#diary-entries-refresh-confirm-modal">Diary Entries Refresh</a></li>
           <li><a href="https://github.com/kazuhira-r/clover-search" target="_blank">Source</a></li>
           <li><a href="https://kazuhira-r.hatenablog.com/" target="_blank">CLOVER&#x1F340;</a></li>
         </ul>
@@ -44,6 +44,19 @@
 
           <div id="search-result-links" class="row"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- Diary Entries Refresh Modal Structure -->
+    <div id="diary-entries-refresh-confirm-modal" class="modal modal-fixed-footer refresh-confirm-modal">
+      <div class="modal-content">
+        <h4>Diary Entries Refresh</h4>
+        <p>We crawl all entries of CLOVER.</p>
+        <p>Are you really sure?</p>
+      </div>
+      <div class="modal-footer">
+        <a id="entries-refresh" href="#!" class="modal-close waves-effect waves-green btn-flat">OK</a>
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">NO</a>
       </div>
     </div>
 

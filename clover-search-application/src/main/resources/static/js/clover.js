@@ -1,4 +1,9 @@
 $(function() {
+  var elems = document.querySelectorAll('.modal');
+  var instances = M.Modal.init(elems, {
+    startingTop: '50%'
+  });
+
   var $searchResultLinks = $('#search-result-links');
 
   var buildDiaryEntryCollection = function(diaryEntries) {
@@ -24,7 +29,7 @@ $(function() {
       }
     });
 
-    return false;
+    return true;
   });
 
   $('#query-text').on('keyup', function(e) {
