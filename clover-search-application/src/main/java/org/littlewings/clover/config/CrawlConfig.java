@@ -27,7 +27,7 @@ public class CrawlConfig {
     }
 
     public static int retrieveServerPort() {
-        return retrieveProperty("server.bind.address", Integer.class)
+        return retrieveProperty("server.port", Integer.class)
                 .orElse(8080);
     }
 
