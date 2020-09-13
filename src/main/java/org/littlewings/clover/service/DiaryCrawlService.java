@@ -2,7 +2,6 @@ package org.littlewings.clover.service;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -13,7 +12,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import io.smallrye.mutiny.Multi;
-import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.subscription.MultiEmitter;
 import org.jboss.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +26,7 @@ import org.littlewings.clover.repository.DiaryRepository;
 public class DiaryCrawlService {
     Logger logger = Logger.getLogger(DiaryCrawlService.class);
 
-    ExecutorService crawExecutorService = Executors.newFixedThreadPool(1);
+    ExecutorService crawExecutorService = Executors.newFixedThreadPool(2);
 
     @Inject
     CrawlConfig crawlConfig;
@@ -40,58 +39,67 @@ public class DiaryCrawlService {
     public void refresh() {
         logger.infof("start scheduled crawling job...");
 
-        Uni
-                .createFrom()
-                .item(() -> crawl())
+        diaryRepository
+                .clear()
                 .runSubscriptionOn(crawExecutorService)
                 .subscribe()
-                .with(diaryEntries -> {
-                    diaryRepository.refresh(diaryEntries);
-                    logger.infof("end initialize crawling, entries count = %d", diaryEntries.size());
+                .with(v -> {
+                });
+
+        Multi<List<DiaryEntry>> multi = Multi
+                .createFrom()
+                .emitter(emitter -> crawl(emitter));
+
+        multi
+                .runSubscriptionOn(crawExecutorService)
+                .onItem()
+                .invoke(diaryEntries -> diaryRepository.append(diaryEntries).subscribe()
+                        .with(v -> {
+                        }))
+                .onCompletion()
+                .invoke(() -> logger.infof("end initialize crawling, entries count = %d", diaryRepository.count().await().indefinitely()))
+                .subscribe()
+                .with(v -> {
                 });
     }
 
-    public List<DiaryEntry> crawl() {
+    public void crawl(MultiEmitter<? super List<DiaryEntry>> emitter) {
         try {
             logger.infof("crawl start base url = %s", crawlConfig.getBaseUrl());
 
             Document document = Jsoup.connect(crawlConfig.getBaseUrl()).get();
 
-            List<DiaryEntry> diaryEntries = new ArrayList<>();
-            crawlWhile(document, diaryEntries);
-
-            return diaryEntries;
+            crawlWhile(document, emitter);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    void crawlWhile(Element baseElement, List<DiaryEntry> diaryEntries) {
+    void crawlWhile(Element baseElement, MultiEmitter<? super List<DiaryEntry>> emitter) {
         Elements entrySections = baseElement.select("section.archive-entry");
 
         List<DiaryEntry> collectedDiaryEntries =
                 entrySections
-                .stream()
-                .map(section -> {
-                    String date = section.select(".archive-date time").attr("title");
-                    String url = section.select(".entry-title > a").attr("href");
-                    String title = section.select(".entry-title > a").text();
-                    List<String> categories =
-                            section
-                                    .select(".categories")
-                                    .stream()
-                                    .map(Element::text)
-                                    .flatMap(text -> Arrays.asList(text.split(" ")).stream())
-                                    .collect(Collectors.toList());
+                        .stream()
+                        .map(section -> {
+                            String date = section.select(".archive-date time").attr("title");
+                            String url = section.select(".entry-title > a").attr("href");
+                            String title = section.select(".entry-title > a").text();
+                            List<String> categories =
+                                    section
+                                            .select(".categories")
+                                            .stream()
+                                            .map(Element::text)
+                                            .flatMap(text -> Arrays.asList(text.split(" ")).stream())
+                                            .collect(Collectors.toList());
 
-                    return DiaryEntry.create(date, url, title, categories);
-                })
-                .collect(Collectors.toList());
+                            return DiaryEntry.create(date, url, title, categories);
+                        })
+                        .collect(Collectors.toList());
 
         logger.infof("collected diary entries = %d", collectedDiaryEntries.size());
 
-        diaryEntries.addAll(collectedDiaryEntries);
-        diaryRepository.refresh(diaryEntries);
+        emitter.emit(collectedDiaryEntries);
 
         Elements pagerNext = baseElement.select(".pager-next > a");
         if (!pagerNext.isEmpty()) {
@@ -103,12 +111,14 @@ public class DiaryCrawlService {
                 sleepTimeUnit.sleep(crawlConfig.getCrawlSleepSeconds());
 
                 logger.infof("next crawl url = %s", pagerNextUrl);
-                crawlWhile(Jsoup.connect(pagerNextUrl).get(), diaryEntries);
+                crawlWhile(Jsoup.connect(pagerNextUrl).get(), emitter);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
         }
+
+        emitter.complete();
     }
 }
