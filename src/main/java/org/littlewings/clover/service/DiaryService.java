@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import io.smallrye.mutiny.Uni;
 import org.littlewings.clover.entity.DiaryEntry;
 import org.littlewings.clover.repository.DiaryRepository;
 
@@ -13,19 +14,23 @@ public class DiaryService {
     @Inject
     DiaryRepository diaryRepository;
 
-    public int count() {
-        return diaryRepository.findAll().size();
+    public Uni<Integer> count() {
+        return diaryRepository.findAll().onItem().transform(diaries -> diaries.size());
     }
 
-    public List<DiaryEntry> findAll() {
+    public Uni<List<DiaryEntry>> findAll() {
         return diaryRepository.findAll();
     }
 
-    public List<DiaryEntry> search(List<String> words) {
+    public Uni<List<DiaryEntry>> search(List<String> words) {
         return diaryRepository
                 .findAll()
-                .stream()
-                .filter(d -> d.match(words))
-                .collect(Collectors.toList());
+                .onItem()
+                .transform(diaries ->
+                        diaries
+                                .stream()
+                                .filter(d -> d.match(words))
+                                .collect(Collectors.toList())
+                );
     }
 }

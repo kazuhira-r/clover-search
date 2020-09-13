@@ -36,7 +36,7 @@ public class DiaryResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Map<String, Object>> count() {
         Map<String, Object> response = new HashMap<>();
-        response.put("count", diaryService.count());
+        response.put("count", diaryService.count().subscribe().asCompletionStage().join());
 
         return Uni.createFrom().item(response);
     }
@@ -44,18 +44,22 @@ public class DiaryResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<DiaryEntry>> get(@QueryParam("limit") Integer limit) {
-        List<DiaryEntry> allEntries = diaryService.findAll();
-        int allEntriesCount = allEntries.size();
+        return diaryService
+                .findAll()
+                .onItem()
+                .transform(allDiaries -> {
+                    int allDiariesCount = allDiaries.size();
 
-        int actualLimit;
+                    int actualLimit;
 
-        if (limit != null) {
-            actualLimit = limit;
-        } else {
-            actualLimit = allEntriesCount;
-        }
+                    if (limit != null) {
+                        actualLimit = limit;
+                    } else {
+                        actualLimit = allDiariesCount;
+                    }
 
-        return Uni.createFrom().item(allEntries.subList(0, (actualLimit > allEntriesCount ? allEntriesCount : actualLimit)));
+                    return allDiaries.subList(0, (actualLimit > allDiariesCount ? allDiariesCount : actualLimit));
+                });
     }
 
     @GET
@@ -63,7 +67,7 @@ public class DiaryResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<DiaryEntry>> search(@QueryParam("query") String query) {
         if (query != null && !query.isEmpty()) {
-            return Uni.createFrom().item(diaryService.search(Arrays.asList(query.split("( |　)+"))));
+            return diaryService.search(Arrays.asList(query.split("( |　)+")));
         } else {
             return Uni.createFrom().item(Collections.emptyList());
         }

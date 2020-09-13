@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.enterprise.context.ApplicationScoped;
 
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import org.littlewings.clover.entity.DiaryEntry;
 
 @ApplicationScoped
@@ -15,7 +17,7 @@ public class DiaryRepository {
         this.diaries.set(new ArrayList<>(diaries));
     }
 
-    public List<DiaryEntry> findAll() {
-        return diaries.get();
+    public Uni<List<DiaryEntry>> findAll() {
+        return Uni.createFrom().item(diaries.get());
     }
 }
