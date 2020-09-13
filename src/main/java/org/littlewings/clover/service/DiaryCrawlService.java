@@ -5,11 +5,15 @@ import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
 import org.jboss.logging.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +27,8 @@ import org.littlewings.clover.repository.DiaryRepository;
 public class DiaryCrawlService {
     Logger logger = Logger.getLogger(DiaryCrawlService.class);
 
+    ExecutorService crawExecutorService = Executors.newFixedThreadPool(1);
+
     @Inject
     CrawlConfig crawlConfig;
 
@@ -31,11 +37,18 @@ public class DiaryCrawlService {
     @Inject
     DiaryRepository diaryRepository;
 
-    public List<DiaryEntry> refresh() {
-        List<DiaryEntry> diaryEntries = crawl();
-        diaryRepository.refresh(diaryEntries);
+    public void refresh() {
+        logger.infof("start scheduled crawling job...");
 
-        return diaryEntries;
+        Uni
+                .createFrom()
+                .item(() -> crawl())
+                .runSubscriptionOn(crawExecutorService)
+                .subscribe()
+                .with(diaryEntries -> {
+                    diaryRepository.refresh(diaryEntries);
+                    logger.infof("end initialize crawling, entries count = %d", diaryEntries.size());
+                });
     }
 
     public List<DiaryEntry> crawl() {
