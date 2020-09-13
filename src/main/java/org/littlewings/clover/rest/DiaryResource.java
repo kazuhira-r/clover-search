@@ -29,10 +29,14 @@ public class DiaryResource {
     @Path("count")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Map<String, Object>> count() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("count", diaryService.count().subscribe().asCompletionStage().join());
-
-        return Uni.createFrom().item(response);
+        return diaryService
+                .count()
+                .onItem()
+                .transform(count -> {
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("count", count);
+                    return response;
+                });
     }
 
     @GET
