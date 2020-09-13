@@ -15,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import io.smallrye.mutiny.Uni;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.Query;
 import org.littlewings.clover.entity.DiaryEntry;
@@ -33,16 +34,16 @@ public class DiaryResource {
     @GET
     @Path("count")
     @Produces(MediaType.APPLICATION_JSON)
-    public Map<String, Object> count() {
+    public Uni<Map<String, Object>> count() {
         Map<String, Object> response = new HashMap<>();
         response.put("count", diaryService.count());
 
-        return response;
+        return Uni.createFrom().item(response);
     }
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public List<DiaryEntry> get(@QueryParam("limit") Integer limit) {
+    public Uni<List<DiaryEntry>> get(@QueryParam("limit") Integer limit) {
         List<DiaryEntry> allEntries = diaryService.findAll();
         int allEntriesCount = allEntries.size();
 
@@ -54,24 +55,24 @@ public class DiaryResource {
             actualLimit = allEntriesCount;
         }
 
-        return allEntries.subList(0, (actualLimit > allEntriesCount ? allEntriesCount : actualLimit));
+        return Uni.createFrom().item(allEntries.subList(0, (actualLimit > allEntriesCount ? allEntriesCount : actualLimit)));
     }
 
     @GET
     @Path("search")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<DiaryEntry> search(@QueryParam("query") String query) {
+    public Uni<List<DiaryEntry>> search(@QueryParam("query") String query) {
         if (query != null && !query.isEmpty()) {
-            return diaryService.search(Arrays.asList(query.split("( |　)+")));
+            return Uni.createFrom().item(diaryService.search(Arrays.asList(query.split("( |　)+"))));
         } else {
-            return Collections.emptyList();
+            return Uni.createFrom().item(Collections.emptyList());
         }
     }
 
     @GET
     @Path("refresh")
     @Produces(MediaType.TEXT_PLAIN)
-    public String refresh() {
+    public Uni<String> refresh() {
         logger.infof("start scheduled crawling job...");
 
         CompletableFuture.runAsync(() -> {
@@ -81,6 +82,6 @@ public class DiaryResource {
             logger.infof("end initialize crawling, entries count = %d", diaryEntries.size());
         });
 
-        return "OK";
+        return Uni.createFrom().item("OK");
     }
 }
