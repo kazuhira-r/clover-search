@@ -1,36 +1,29 @@
 package org.littlewings.clover.service;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.List;
-import java.util.stream.Collectors;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-
-import io.smallrye.mutiny.Uni;
 import org.littlewings.clover.entity.DiaryEntry;
 import org.littlewings.clover.repository.DiaryRepository;
 
 @ApplicationScoped
 public class DiaryService {
     @Inject
-    DiaryRepository diaryRepository;
+    private DiaryRepository diaryRepository;
 
-    public Uni<Integer> count() {
-        return diaryRepository.findAll().onItem().transform(diaries -> diaries.size());
+    public int count() {
+        return diaryRepository.findAll().size();
     }
 
-    public Uni<List<DiaryEntry>> findAll() {
+    public List<DiaryEntry> findAll() {
         return diaryRepository.findAll();
     }
 
-    public Uni<List<DiaryEntry>> search(List<String> words) {
+    public List<DiaryEntry> search(List<String> words) {
         return diaryRepository
                 .findAll()
-                .onItem()
-                .transform(diaries ->
-                        diaries
-                                .stream()
-                                .filter(d -> d.match(words))
-                                .collect(Collectors.toList())
-                );
+                .stream()
+                .filter(d -> d.match(words))
+                .toList();
     }
 }

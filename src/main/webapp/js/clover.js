@@ -22,7 +22,7 @@ $(function() {
 
   $('#entries-refresh').on('click', function(e) {
     $.ajax({
-      url: '/api/diary/refresh',
+      url: '/api/diaries/refresh',
       cache: false,
       success: function() {
         M.toast({html: 'start diary entries, refresh...', displayLength: 3000});
@@ -37,7 +37,7 @@ $(function() {
 
     if (query) {
       $.ajax({
-        url: '/api/diary/search?query=' + encodeURIComponent(query),
+        url: '/api/diaries/search?query=' + encodeURIComponent(query),
         cache: false,
         dataType: 'json',
         success: function(diaryEntries) {
@@ -57,15 +57,13 @@ $(function() {
     }
   });
 
-  var limit = 50
-
   $.ajax({
-    url: '/api/diary?limit=' + limit,
+    url: '/api/diaries',
     cache: false,
     dataType: 'json',
     success: function(diaryEntries) {
       $.ajax({
-        url: '/api/diary/count',
+        url: '/api/diaries/count',
         cache: false,
         dataType: 'json',
         success: function(data) {
