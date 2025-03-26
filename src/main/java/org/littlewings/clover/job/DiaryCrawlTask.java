@@ -1,13 +1,9 @@
 package org.littlewings.clover.job;
 
-import jakarta.annotation.Resource;
-import jakarta.enterprise.concurrent.ManagedExecutorService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.event.Startup;
-import jakarta.enterprise.inject.spi.CDI;
 import jakarta.inject.Inject;
-import org.jboss.logging.Logger;
 import org.littlewings.clover.config.CrawlConfig;
 import org.littlewings.clover.service.ConcurrentService;
 import org.littlewings.clover.service.DiaryCrawlService;
@@ -55,14 +51,6 @@ public class DiaryCrawlTask implements Job {
 
         scheduler.scheduleJob(jobDetail, trigger);
         scheduler.start();
-
-        concurrentService.submit(() -> {
-            try {
-                execute(null);
-            } catch (JobExecutionException e) {
-                throw new RuntimeException(e);
-            }
-        });
     }
 
     @Override
