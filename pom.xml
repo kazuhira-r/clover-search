@@ -118,6 +118,9 @@
                                 <command>/interface=public:write-attribute(name=inet-address,value="0.0.0.0")</command>
                                 <command>/socket-binding-group=standard-sockets/socket-binding=http:write-attribute(name=port,value="${PORT:8080}")</command>
                             </commands>
+                            <java-opts>
+                              <java-opt>-Xmx384m</java-opt>
+                            </java-opts>
                         </packaging-script>
                     </packaging-scripts>
                 </configuration>
