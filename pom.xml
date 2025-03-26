@@ -115,6 +115,7 @@
                     <packaging-scripts>
                         <packaging-script>
                             <commands>
+                                <command>/interface=public:write-attribute(name=inet-address,value="0.0.0.0")</command>
                                 <command>/socket-binding-group=standard-sockets/socket-binding=http:write-attribute(name=port,value="${PORT:8080}")</command>
                             </commands>
                         </packaging-script>
