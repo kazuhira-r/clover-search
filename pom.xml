@@ -112,6 +112,13 @@
                         <version>${wildfly.version}</version>
                         <failsOnError>false</failsOnError>
                     </discover-provisioning-info>
+                    <packaging-scripts>
+                        <packaging-script>
+                            <commands>
+                                <command>/socket-binding-group=standard-sockets/socket-binding=http:write-attribute(name=port,value="${PORT:8080}")</command>
+                            </commands>
+                        </packaging-script>
+                    </packaging-scripts>
                 </configuration>
             </plugin>
             <plugin>
