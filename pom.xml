@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.littlewings</groupId>
     <artifactId>clover-search</artifactId>
-    <version>0.4.0</version>
+    <version>0.5.0</version>
     <packaging>war</packaging>
 
     <properties>
@@ -14,6 +14,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <wildfly.version>35.0.1.Final</wildfly.version>
+        <resteasy.version>6.2.11.Final</resteasy.version>
         <jsoup.version>1.19.1</jsoup.version>
         <quartz.version>2.5.0</quartz.version>
 
@@ -43,39 +44,22 @@
 
     <dependencies>
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-json-binding-provider</artifactId>
         </dependency>
         <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-servlet-initializer</artifactId>
+            <version>${resteasy.version}</version>
         </dependency>
         <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <scope>provided</scope>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-undertow-cdi</artifactId>
+            <version>${resteasy.version}</version>
         </dependency>
         <dependency>
-            <groupId>jakarta.inject</groupId>
-            <artifactId>jakarta.inject-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.enterprise.concurrent</groupId>
-            <artifactId>jakarta.enterprise.concurrent-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.microprofile.config</groupId>
-            <artifactId>microprofile-config-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.logging</groupId>
-            <artifactId>jboss-logging</artifactId>
-            <scope>provided</scope>
+            <groupId>io.smallrye.config</groupId>
+            <artifactId>smallrye-config</artifactId>
         </dependency>
 
         <dependency>
@@ -95,34 +79,16 @@
         <finalName>ROOT</finalName>
         <plugins>
             <plugin>
-                <groupId>org.wildfly.plugins</groupId>
-                <artifactId>wildfly-maven-plugin</artifactId>
-                <version>${wildfly-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>package</id>
-                        <goals>
-                            <goal>package</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>3.4.5</version>
                 <configuration>
-                    <overwrite-provisioned-server>true</overwrite-provisioned-server>
-                    <discover-provisioning-info>
-                        <version>${wildfly.version}</version>
-                        <failsOnError>false</failsOnError>
-                    </discover-provisioning-info>
-                    <packaging-scripts>
-                        <packaging-script>
-                            <commands>
-                                <command>/interface=public:write-attribute(name=inet-address,value="0.0.0.0")</command>
-                                <command>/socket-binding-group=standard-sockets/socket-binding=http:write-attribute(name=port,value="${PORT:8080}")</command>
-                            </commands>
-                            <java-opts>
-                              <java-opt>-Xmx384m</java-opt>
-                            </java-opts>
-                        </packaging-script>
-                    </packaging-scripts>
+                    <from>
+                        <image>eclipse-temurin:21.0.6_7-jdk-noble</image>
+                    </from>
+                    <to>
+                        <image>${project.artifactId}:${project.version}</image>
+                    </to>
                 </configuration>
             </plugin>
             <plugin>
