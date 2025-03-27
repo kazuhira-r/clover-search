@@ -88,7 +88,7 @@
                     <to>
                         <image>${project.artifactId}:${project.version}</image>
                     </to>
-                    <containerizingMode>package</containerizingMode>
+                    <containerizingMode>packaged</containerizingMode>
                 </configuration>
             </plugin>
             <plugin>
