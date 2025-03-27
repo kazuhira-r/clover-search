@@ -44,13 +44,26 @@ public class Server {
         DeploymentManager deploymentManager = Servlets.defaultContainer().addDeployment(deploymentInfo);
         deploymentManager.deploy();
 
-        ResourceManager staticResourceManager = new ClassPathResourceManager(Server.class.getClassLoader(), "static");
+        ResourceManager indexResourceManager = new ClassPathResourceManager(Server.class.getClassLoader(), "static");
+        ResourceManager jsResourceManager = new ClassPathResourceManager(Server.class.getClassLoader(), "static/js");
+        ResourceManager cssResourceManager = new ClassPathResourceManager(Server.class.getClassLoader(), "static/css");
+
+        HttpHandler applicationHandler = deploymentManager.start();
 
         HttpHandler handler =
                 Handlers
-                        .path(Handlers.redirect("/static"))
-                        .addPrefixPath("/static", Handlers.resource(staticResourceManager))
-                        .addPrefixPath("/", deploymentManager.start());
+                        .path(Handlers.redirect("/"))
+                        .addPrefixPath("/js", Handlers.resource(jsResourceManager))
+                        .addPrefixPath("/css", Handlers.resource(cssResourceManager))
+                        .addPrefixPath("/", exchange -> {
+                            if (exchange.getRelativePath().equals("/")) {
+                                exchange.setRelativePath("/index.html");
+                                exchange.setRequestPath("/index.html");
+                                exchange.dispatch(Handlers.resource(indexResourceManager));
+                            } else {
+                                exchange.dispatch(applicationHandler);
+                            }
+                        });
 
         Undertow undertow =
                 Undertow
