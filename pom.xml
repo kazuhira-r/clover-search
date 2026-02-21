@@ -8,19 +8,22 @@
     <version>0.5.1</version>
 
     <properties>
-        <maven.compiler.release>21</maven.compiler.release>
+        <maven.compiler.release>25</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <wildfly.version>35.0.1.Final</wildfly.version>
-        <resteasy.version>6.2.11.Final</resteasy.version>
-        <jsoup.version>1.19.1</jsoup.version>
-        <quartz.version>2.5.0</quartz.version>
-        <logback.version>1.5.18</logback.version>
+        <wildfly.version>39.0.1.Final</wildfly.version>
+        <resteasy.version>6.2.15.Final</resteasy.version>
+        <undertow.version>2.3.23.Final</undertow.version>
+        <jsoup.version>1.12.1</jsoup.version>
+        <quartz.version>2.5.2</quartz.version>
+        <logback.version>1.5.32</logback.version>
 
-        <wildfly-maven-plugin.version>5.1.2.Final</wildfly-maven-plugin.version>
-        <spotbugs-maven-plugin.version>4.9.3.0</spotbugs-maven-plugin.version>
-        <spotbugs.findsecbugs-plugin.version>1.12.0</spotbugs.findsecbugs-plugin.version>
+        <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
+        <spotbugs-maven-plugin.version>4.9.8.2</spotbugs-maven-plugin.version>
+        <spotbugs.findsecbugs-plugin.version>1.14.0</spotbugs.findsecbugs-plugin.version>
+
+        <java.image.tag>eclipse-temurin:25.0.2_10-jdk-noble</java.image.tag>
     </properties>
 
     <dependencyManagement>
@@ -58,6 +61,11 @@
             <version>${resteasy.version}</version>
         </dependency>
         <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <version>${undertow.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.smallrye.config</groupId>
             <artifactId>smallrye-config</artifactId>
         </dependency>
@@ -87,10 +95,10 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.4.5</version>
+                <version>${jib-maven-plugin.version}</version>
                 <configuration>
                     <from>
-                        <image>eclipse-temurin:21.0.6_7-jdk-noble</image>
+                        <image>${java.image.tag}</image>
                     </from>
                     <to>
                         <image>${project.artifactId}:${project.version}</image>

@@ -67,6 +67,7 @@ public class DiaryCrawlService {
                 logger.infof("collected diary entries = %d", collectedDiaryEntries.size());
 
                 Elements pagerNext = baseElement.select(".pager-next > a");
+
                 if (!pagerNext.isEmpty()) {
                     String pagerNextUrl = pagerNext.select("a").attr("href");
 
