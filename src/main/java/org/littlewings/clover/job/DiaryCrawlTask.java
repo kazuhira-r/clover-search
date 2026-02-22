@@ -52,6 +52,8 @@ public class DiaryCrawlTask implements Job {
         scheduler.scheduleJob(jobDetail, trigger);
         scheduler.start();
 
+        /*
+        // 起動時間が長くなるため、起動時はデータ取得をしない
         concurrentService.submit(() -> {
             try {
                 execute(null);
@@ -59,6 +61,7 @@ public class DiaryCrawlTask implements Job {
                 throw new RuntimeException(e);
             }
         });
+        */
     }
 
     @Override
