@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jboss.logging.Logger;
 import org.littlewings.clover.entity.DiaryEntry;
 import org.littlewings.clover.service.ConcurrentService;
 import org.littlewings.clover.service.DiaryCrawlService;
@@ -21,6 +22,8 @@ import org.littlewings.clover.service.DiaryService;
 @ApplicationScoped
 @Path("/diaries")
 public class DiariesResource {
+    private Logger logger = Logger.getLogger(DiariesResource.class);
+
     @Inject
     private DiaryService diaryService;
 
@@ -71,8 +74,12 @@ public class DiariesResource {
     @Produces(MediaType.TEXT_PLAIN)
     public void refresh() {
         concurrentService.submit(() -> {
-            DiaryCrawlService diaryCrawlService = CDI.current().select(DiaryCrawlService.class).get();
-            diaryCrawlService.refresh();
+            try {
+                DiaryCrawlService diaryCrawlService = CDI.current().select(DiaryCrawlService.class).get();
+                diaryCrawlService.refresh();
+            } catch (RuntimeException e) {
+                logger.infof("refresh failed: %s", e.getMessage(), e);
+            }
         });
     }
 }
