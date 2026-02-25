@@ -91,7 +91,7 @@ public class DiaryCrawlService {
 
                                 sleepSeconds += crawlConfig.getCrawRetryBackoffSeconds();
                                 currentExecutionCount++;
-                                break;
+                                continue;
                             }
 
                             throw e;
