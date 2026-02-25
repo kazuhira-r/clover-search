@@ -41,6 +41,9 @@ public class DiaryCrawlService {
     private void crawl() {
         logger.infof("crawl start base url = %s", crawlConfig.getArchiveBaseUrl());
 
+        long sleepSeconds = crawlConfig.getCrawlSleepSeconds();
+        int currentExecutionCount = 1;
+
         try {
             Element baseElement = Jsoup.connect(crawlConfig.getArchiveBaseUrl()).get();
 
@@ -71,17 +74,28 @@ public class DiaryCrawlService {
                 if (!pagerNext.isEmpty()) {
                     String pagerNextUrl = pagerNext.select("a").attr("href");
 
-                    try {
-                        logger.infof("sleeping %s sec...", crawlConfig.getCrawlSleepSeconds());
+                    while (true) {
+                        try {
+                            logger.infof("sleeping %s sec...", sleepSeconds);
 
-                        sleepTimeUnit.sleep(crawlConfig.getCrawlSleepSeconds());
+                            sleepTimeUnit.sleep(sleepSeconds);
 
-                        logger.infof("next crawl url = %s", pagerNextUrl);
-                        baseElement = Jsoup.connect(pagerNextUrl).get();
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    } catch (IOException e) {
-                        throw new UncheckedIOException(e);
+                            logger.infof("next crawl url = %s", pagerNextUrl);
+                            baseElement = Jsoup.connect(pagerNextUrl).get();
+                            break;
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        } catch (IOException e) {
+                            if (currentExecutionCount < crawlConfig.getCrawRetryLimit()) {
+                                logger.infof(e, "current execution count = %d, refresh failed reason = %s, retry next loop", currentExecutionCount, e.getMessage());
+
+                                sleepSeconds += crawlConfig.getCrawRetryBackoffSeconds();
+                                currentExecutionCount++;
+                                break;
+                            }
+
+                            throw e;
+                        }
                     }
                 } else {
                     break;

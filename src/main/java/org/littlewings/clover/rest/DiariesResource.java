@@ -78,7 +78,7 @@ public class DiariesResource {
                 DiaryCrawlService diaryCrawlService = CDI.current().select(DiaryCrawlService.class).get();
                 diaryCrawlService.refresh();
             } catch (RuntimeException e) {
-                logger.infof("refresh failed: %s", e.getMessage(), e);
+                logger.infof(e, "refresh failed reason = %s", e.getMessage());
             }
         });
     }

@@ -16,6 +16,14 @@ public class CrawlConfig {
     private long crawlSleepSeconds;
 
     @Inject
+    @ConfigProperty(name = "diary.crawl.retry.limit")
+    private int crawRetryLimit;
+
+    @Inject
+    @ConfigProperty(name = "diary.crawl.retry.backoff.seconds")
+    private int crawRetryBackoffSeconds;
+
+    @Inject
     @ConfigProperty(name = "diary.crawl.job.schedule")
     private String crawlJobSchedule;
 
@@ -25,6 +33,14 @@ public class CrawlConfig {
 
     public long getCrawlSleepSeconds() {
         return crawlSleepSeconds;
+    }
+
+    public int getCrawRetryLimit() {
+        return crawRetryLimit;
+    }
+
+    public int getCrawRetryBackoffSeconds() {
+        return crawRetryBackoffSeconds;
     }
 
     public String getCrawlJobSchedule() {
