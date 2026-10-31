@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.littlewings</groupId>
     <artifactId>clover-search</artifactId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
 
     <properties>
         <maven.compiler.release>25</maven.compiler.release>
@@ -15,7 +15,7 @@
         <wildfly.version>42.0.0.Final</wildfly.version>
         <resteasy.version>7.0.5.Final</resteasy.version>
         <undertow.version>2.3.27.Final</undertow.version>
-        <jsoup.version>1.23.2</jsoup.version>
+        <jsoup.version>1.20.1</jsoup.version>
         <quartz.version>2.5.2</quartz.version>
         <logback.version>1.6.6</logback.version>
 

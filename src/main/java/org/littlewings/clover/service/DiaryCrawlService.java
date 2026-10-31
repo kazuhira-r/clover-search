@@ -79,10 +79,7 @@ public class DiaryCrawlService {
                             sleepTimeUnit.sleep(sleepSeconds);
 
                             logger.infof("next crawl url = %s", pagerNextUrl);
-                            baseElement = Jsoup.connect(pagerNextUrl)
-                                    .userAgent(
-                                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
-                                    .get();
+                            baseElement = Jsoup.connect(pagerNextUrl).get();
                             break;
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
