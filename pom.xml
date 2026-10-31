@@ -15,10 +15,12 @@
         <wildfly.version>42.0.0.Final</wildfly.version>
         <resteasy.version>7.0.5.Final</resteasy.version>
         <undertow.version>2.3.27.Final</undertow.version>
-        <jsoup.version>1.20.1</jsoup.version>
+        <jsoup.version>1.23.2</jsoup.version>
         <quartz.version>2.5.2</quartz.version>
         <logback.version>1.6.6</logback.version>
 
+        <spotless-maven-plugin.version>3.10.4</spotless-maven-plugin.version>
+        <palantir-java-format>2.102.0</palantir-java-format>
         <jib-maven-plugin.version>3.5.2</jib-maven-plugin.version>
         <spotbugs-maven-plugin.version>4.10.5.0</spotbugs-maven-plugin.version>
         <spotbugs.findsecbugs-plugin.version>1.14.0</spotbugs.findsecbugs-plugin.version>
@@ -91,6 +93,28 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <java>
+                        <palantirJavaFormat>
+                            <version>${palantir-java-format}</version>
+                            <style>PALANTIR</style>
+                            <formatJavadoc>true</formatJavadoc>
+                        </palantirJavaFormat>
+                    </java>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>

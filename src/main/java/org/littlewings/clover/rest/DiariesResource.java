@@ -75,7 +75,8 @@ public class DiariesResource {
     public void refresh() {
         concurrentService.submit(() -> {
             try {
-                DiaryCrawlService diaryCrawlService = CDI.current().select(DiaryCrawlService.class).get();
+                DiaryCrawlService diaryCrawlService =
+                        CDI.current().select(DiaryCrawlService.class).get();
                 diaryCrawlService.refresh();
             } catch (RuntimeException e) {
                 logger.infof(e, "refresh failed reason = %s", e.getMessage());

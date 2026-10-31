@@ -33,18 +33,15 @@ public class DiaryCrawlTask implements Job {
     @Inject
     private ConcurrentService concurrentService;
 
-
     void onStart(@Observes Startup event) throws SchedulerException {
         Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
         scheduler.setJobFactory(cdiJobFactory);
 
-        JobDetail jobDetail = JobBuilder
-                .newJob(DiaryCrawlTask.class)
+        JobDetail jobDetail = JobBuilder.newJob(DiaryCrawlTask.class)
                 .withIdentity("diary-crawl-job", "group")
                 .build();
 
-        Trigger trigger = TriggerBuilder
-                .newTrigger()
+        Trigger trigger = TriggerBuilder.newTrigger()
                 .withIdentity("diary-crawl-job-trigger", "group")
                 .withSchedule(CronScheduleBuilder.cronSchedule(crawlConfig.getCrawlJobSchedule()))
                 .build();

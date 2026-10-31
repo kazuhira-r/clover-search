@@ -1,11 +1,7 @@
 package org.littlewings.clover.job;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.spi.CreationalContext;
-import jakarta.enterprise.inject.spi.Bean;
-import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.CDI;
-import jakarta.inject.Inject;
 import org.quartz.Job;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

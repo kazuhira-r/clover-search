@@ -49,21 +49,19 @@ public class DiaryCrawlService {
 
             while (true) {
                 Elements entrySections = baseElement.select("section.archive-entry");
-                List<DiaryEntry> collectedDiaryEntries =
-                        entrySections.stream().map(section -> {
+                List<DiaryEntry> collectedDiaryEntries = entrySections.stream()
+                        .map(section -> {
                             String date = section.select(".archive-date time").attr("title");
                             String url = section.select(".entry-title > a").attr("href");
                             String title = section.select(".entry-title > a").text();
-                            List<String> categories =
-                                    section
-                                            .select(".categories")
-                                            .stream()
-                                            .map(Element::text)
-                                            .flatMap(text -> Arrays.asList(text.split(" ")).stream())
-                                            .collect(Collectors.toList());
+                            List<String> categories = section.select(".categories").stream()
+                                    .map(Element::text)
+                                    .flatMap(text -> Arrays.asList(text.split(" ")).stream())
+                                    .collect(Collectors.toList());
 
                             return new DiaryEntry(date, url, title, categories);
-                        }).toList();
+                        })
+                        .toList();
 
                 diaryRepository.append(collectedDiaryEntries);
 
@@ -81,13 +79,20 @@ public class DiaryCrawlService {
                             sleepTimeUnit.sleep(sleepSeconds);
 
                             logger.infof("next crawl url = %s", pagerNextUrl);
-                            baseElement = Jsoup.connect(pagerNextUrl).get();
+                            baseElement = Jsoup.connect(pagerNextUrl)
+                                    .userAgent(
+                                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36")
+                                    .get();
                             break;
                         } catch (InterruptedException e) {
                             throw new RuntimeException(e);
                         } catch (IOException e) {
                             if (currentExecutionCount < crawlConfig.getCrawRetryLimit()) {
-                                logger.infof(e, "current execution count = %d, refresh failed reason = %s, retry next loop", currentExecutionCount, e.getMessage());
+                                logger.infof(
+                                        e,
+                                        "current execution count = %d, refresh failed reason = %s, retry next loop",
+                                        currentExecutionCount,
+                                        e.getMessage());
 
                                 sleepSeconds += crawlConfig.getCrawRetryBackoffSeconds();
                                 currentExecutionCount++;

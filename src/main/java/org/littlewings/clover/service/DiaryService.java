@@ -20,10 +20,6 @@ public class DiaryService {
     }
 
     public List<DiaryEntry> search(List<String> words) {
-        return diaryRepository
-                .findAll()
-                .stream()
-                .filter(d -> d.match(words))
-                .toList();
+        return diaryRepository.findAll().stream().filter(d -> d.match(words)).toList();
     }
 }
